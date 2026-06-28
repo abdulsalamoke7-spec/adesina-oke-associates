@@ -1,5 +1,6 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
+const rateLimit = require('express-rate-limit');
 const Meeting = require('../models/Meeting');
 const { protect } = require('../middleware/auth');
 const {
@@ -11,6 +12,12 @@ const {
 } = require('../config/notifications');
 
 const router = express.Router();
+
+const bookingLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  message: { error: 'Too many booking attempts. Please try again in an hour.' },
+});
 
 const VALID_TIMES = [
   '9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM',
@@ -40,7 +47,7 @@ router.get('/slots', async (req, res) => {
   }
 });
 
-router.post('/', [
+router.post('/', bookingLimiter, [
   body('firstName').trim().notEmpty().withMessage('First name required'),
   body('lastName').trim().notEmpty().withMessage('Last name required'),
   body('email').isEmail().normalizeEmail().withMessage('Valid email required'),

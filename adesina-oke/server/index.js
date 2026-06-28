@@ -8,7 +8,6 @@ const app = express();
 
 connectDB();
 
-// Allow multiple frontend origins
 const allowedOrigins = [
   process.env.CLIENT_URL,
   'http://localhost:5173',
@@ -19,7 +18,6 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, Render health checks)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
     callback(new Error('Not allowed by CORS'));
@@ -36,14 +34,8 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-const bookingLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 5,
-  message: { error: 'Too many booking attempts. Please try again in an hour.' },
-});
-
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/meetings', bookingLimiter, require('./routes/meetings'));
+app.use('/api/meetings', require('./routes/meetings'));
 app.use('/api/journal', require('./routes/journal'));
 
 app.get('/api/health', (req, res) => {
