@@ -25,7 +25,7 @@ export default function Footer() {
           <div>
             <div style={{ fontSize: '0.68rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#B8963E', marginBottom: '0.75rem' }}>Contact</div>
             <ul style={{ listStyle: 'none' }}>
-              {['Abuja, Nigeria', 'askadesinaoke@yahoo.co.uk', '+234 802 232 3618'].map(t => (
+              {['Abuja, Nigeria', 'askadesinaoke@yahoo.co.uk', '+234 802 312 3618'].map(t => (
                 <li key={t} style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginBottom: '0.5rem', wordBreak: 'break-word' }}>{t}</li>
               ))}
             </ul>
