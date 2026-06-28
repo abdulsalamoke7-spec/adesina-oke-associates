@@ -80,17 +80,18 @@ router.post('/', [
 });
 
 // ── GET /api/meetings — list all meetings (admin only) ───────────────────
-router.get('/', protect, async (req, res) => {
-  try {
-    const { status, date } = req.query;
-    const filter = {};
-    if (status) filter.status = status;
-    if (date) filter.date = date;
+router.get('/slots', async (req, res) => {
+  const { date } = req.query;
+  if (!date) return res.status(400).json({ error: 'date query param required' });
 
-    const meetings = await Meeting.find(filter).sort({ date: 1, time: 1 });
-    res.json(meetings);
+  try {
+    const booked = await Meeting.find({ date, status: { $ne: 'cancelled' } }).select('time');
+    const bookedTimes = booked.map(m => m.time);
+    const available = VALID_TIMES.filter(t => !bookedTimes.includes(t));
+    res.json({ date, available, booked: bookedTimes });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch meetings' });
+    console.error('Slots error:', err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 
