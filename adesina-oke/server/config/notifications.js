@@ -1,7 +1,7 @@
 const { Resend } = require('resend');
 const axios = require('axios');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // ── Email ────────────────────────────────────────────────────────────────────
 
@@ -36,6 +36,7 @@ async function notifyFirmOfBooking(meeting) {
   `;
 
   try {
+   if (!resend) { console.log('Email skipped — RESEND_API_KEY not set'); return; }
     await resend.emails.send({
       from: process.env.EMAIL_FROM,
       to: process.env.FIRM_EMAIL,
@@ -72,6 +73,7 @@ async function confirmClientEmail(meeting) {
   `;
 
   try {
+   if (!resend) { console.log('Email skipped — RESEND_API_KEY not set'); return; }
     await resend.emails.send({
       from: process.env.EMAIL_FROM,
       to: meeting.email,
@@ -102,6 +104,7 @@ async function notifyClientOfStatus(meeting) {
   `;
 
   try {
+   if (!resend) { console.log('Email skipped — RESEND_API_KEY not set'); return; }
     await resend.emails.send({
       from: process.env.EMAIL_FROM,
       to: meeting.email,
